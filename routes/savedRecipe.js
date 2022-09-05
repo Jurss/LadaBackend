@@ -3,6 +3,13 @@ const router = express.Router();
 const savedRecipeCtrl = require('../controllers/savedRecipe')
 
 router.post('/', savedRecipeCtrl.createRecipe);
-router.get('/:userId', savedRecipeCtrl.getRecipe);
+router.get('/', savedRecipeCtrl.getAllRecipe);
+router.get('/:userId/:id', savedRecipeCtrl.getOneRecipe);
+router.delete('/:id', savedRecipeCtrl.deleteRecipe);
+router.put('/', savedRecipeCtrl.updateRecipe);
+
+
+
+
 
 module.exports = router
