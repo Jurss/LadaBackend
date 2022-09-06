@@ -1,5 +1,6 @@
 const express = require('express');
-const savedRecipeRoutes = require('./routes/savedRecipe')
+const path = require('path');
+const savedRecipeRoutes = require('./routes/savedRecipe');
 
 const app = express();
 app.use(express.json());
@@ -11,6 +12,7 @@ app.use((req, res, next) => {
     next();
 });
 
+app.use('/images', express.static(path.join(__dirname, 'images')));
 app.use('/api/saveRecipe', savedRecipeRoutes);
 
 module.exports = app;

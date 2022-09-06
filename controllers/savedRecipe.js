@@ -43,9 +43,11 @@ exports.createRecipe = (req, res, next) => {
         quantity: req.query.quantity,
         typeQuantity: req.query.typeQuantity,
         costForOne: req.query.costForOne,
-        costForQuantitySelect: req.query.costForQuantitySelect
+        costForQuantitySelect: req.query.costForQuantitySelect,
+        images: `${req.protocol}://${req.get('host')}/images/${req.file.filename}`
     }
-    const sqlQuery = "(" + mysql.escape(data.userId) + ", " + mysql.escape(data.title) + ", " + mysql.escape(data.quantity) + ", " + mysql.escape(data.typeQuantity) + ", " + mysql.escape(data.costForOne) + ", " + mysql.escape(data.costForQuantitySelect) + ")"
+    const sqlQuery = "(" + mysql.escape(data.userId) + ", " + mysql.escape(data.title) + ", " + mysql.escape(data.quantity) + ", " + mysql.escape(data.typeQuantity) + ", " + mysql.escape(data.costForOne) + ", " + mysql.escape(data.costForQuantitySelect) + ", " + mysql.escape(data.images) + ")"
+    console.log('2', sqlQuery)
     connection.query(sqlInsert + sqlQuery, function(err, data) {
         if (err) {
             res.status(400).json({ err })
@@ -68,7 +70,8 @@ exports.deleteRecipe = (req, res, next) => {
 
 exports.updateRecipe = (req, res, next) => {
     const field = req.query.field;
-    const value = req.query.value;
+    console.log(field)
+    const value = field === "images_url" ? `${req.protocol}://${req.get('host')}/images/${req.file.filename}` : req.query.value;
     const id = parseInt(req.query.id);
 
     console.log(sqlUpdatePre + mysql.escape(field) + sqlUpdateMiddle + mysql.escape(value) + sqlUpdateNext + mysql.escape(id))
