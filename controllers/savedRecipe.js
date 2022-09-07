@@ -44,7 +44,7 @@ exports.createRecipe = (req, res, next) => {
         typeQuantity: req.query.typeQuantity,
         costForOne: req.query.costForOne,
         costForQuantitySelect: req.query.costForQuantitySelect,
-        images: `${req.protocol}://${req.get('host')}/images/${req.file.filename}`
+        images: req.file ? `${req.protocol}://${req.get('host')}/images/${req.file.filename}` : "NULL"
     }
     const sqlQuery = "(" + mysql.escape(data.userId) + ", " + mysql.escape(data.title) + ", " + mysql.escape(data.quantity) + ", " + mysql.escape(data.typeQuantity) + ", " + mysql.escape(data.costForOne) + ", " + mysql.escape(data.costForQuantitySelect) + ", " + mysql.escape(data.images) + ")"
     console.log('2', sqlQuery)
