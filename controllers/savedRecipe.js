@@ -47,7 +47,7 @@ exports.createRecipe = (req, res, next) => {
         images: req.file ? `${req.protocol}://${req.get('host')}/images/${req.file.filename}` : "NULL"
     }
     const sqlQuery = "(" + mysql.escape(data.userId) + ", " + mysql.escape(data.title) + ", " + mysql.escape(data.quantity) + ", " + mysql.escape(data.typeQuantity) + ", " + mysql.escape(data.costForOne) + ", " + mysql.escape(data.costForQuantitySelect) + ", " + mysql.escape(data.images) + ")"
-    console.log('2', sqlQuery)
+
     connection.query(sqlInsert + sqlQuery, function(err, data) {
         if (err) {
             res.status(400).json({ err })
@@ -69,18 +69,29 @@ exports.deleteRecipe = (req, res, next) => {
 }
 
 exports.updateRecipe = (req, res, next) => {
-    const field = req.query.field;
-    console.log(field)
-    const value = field === "images_url" ? `${req.protocol}://${req.get('host')}/images/${req.file.filename}` : req.query.value;
-    const id = parseInt(req.query.id);
+    if (req.file === undefined) {
+        const field = req.body.field;
+        const value = req.body.value;
+        const id = parseInt(req.body.id);
 
-    console.log(sqlUpdatePre + mysql.escape(field) + sqlUpdateMiddle + mysql.escape(value) + sqlUpdateNext + mysql.escape(id))
+        connection.query(sqlUpdatePre + field + sqlUpdateMiddle + mysql.escape(value) + sqlUpdateNext + mysql.escape(id), function(err, data) {
+            if (err) {
+                res.status(400).json({ err })
+            } else {
+                res.status(200).json({ res: "fullyfied" })
+            }
+        })
+    } else {
+        const field = req.body.field;
+        const value = `${req.protocol}://${req.get('host')}/images/${req.file.filename}`;
+        const id = parseInt(req.body.id);
 
-    connection.query(sqlUpdatePre + field + sqlUpdateMiddle + mysql.escape(value) + sqlUpdateNext + mysql.escape(id), function(err, data) {
-        if (err) {
-            res.status(400).json({ err })
-        } else {
-            res.status(200).json({ res: "fullyfied" })
-        }
-    })
+        connection.query(sqlUpdatePre + field + sqlUpdateMiddle + mysql.escape(value) + sqlUpdateNext + mysql.escape(id), function(err, data) {
+            if (err) {
+                res.status(400).json({ err })
+            } else {
+                res.status(200).json({ res: "fullyfied" })
+            }
+        })
+    }
 }
