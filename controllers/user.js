@@ -5,6 +5,7 @@ const connection = require('../dbConnect/dbConnect');
 let mysql = require('mysql');
 const { v4: uuidv4 } = require('uuid');
 const bcrypt = require('bcrypt');
+const jwt = require('jsonwebtoken');
 
 exports.signUp = (req, res, next) => {
     const userId = uuidv4()
@@ -46,7 +47,9 @@ exports.signIn = (req, res, next) => {
                     }
                     res.status(200).json({
                         userId: data[0].userId,
-                        token: "TOKEN"
+                        token: jwt.sign({ userId: data[0].userId },
+                            "ufhqRRGvcSOdIyCOtXm", { expiresIn: "24h" }
+                        )
                     })
                 })
                 .catch(err => res.status(500).json({ err: "two" }))

@@ -1,10 +1,11 @@
 const express = require('express');
 const router = express.Router();
-const elementsForSavedRecipeCtrl = require('../controllers/elementsForSavedRecipe')
+const auth = require('../midlewares/auth.js');
+const elementsForSavedRecipeCtrl = require('../controllers/elementsForSavedRecipe');
 
-router.post('/', elementsForSavedRecipeCtrl.createElement);
-router.get('/', elementsForSavedRecipeCtrl.getAllElementsForRecipe);
-router.delete('/:id', elementsForSavedRecipeCtrl.deleteElement);
-router.put('/', elementsForSavedRecipeCtrl.updateElement);
+router.post('/', auth, elementsForSavedRecipeCtrl.createElement);
+router.get('/', auth, elementsForSavedRecipeCtrl.getAllElementsForRecipe);
+router.delete('/:id', auth, elementsForSavedRecipeCtrl.deleteElement);
+router.put('/', auth, elementsForSavedRecipeCtrl.updateElement);
 
 module.exports = router
