@@ -6,7 +6,8 @@ const sqlUpdatePre = savedRecipe.sqlUpdatePre;
 const sqlUpdateNext = savedRecipe.sqlUpdateNext;
 const sqlUpdateMiddle = savedRecipe.sqlUpdateMiddle;
 const connection = require('../dbConnect/dbConnect')
-let mysql = require('mysql')
+let mysql = require('mysql');
+const fs = require("fs");
 
 exports.getAllRecipe = (req, res, next) => {
     const userId = req.query.userId
@@ -20,6 +21,7 @@ exports.getAllRecipe = (req, res, next) => {
     })
 }
 exports.getOneRecipe = (req, res, next) => {
+    console.log('1', req.headers)
     const userId = req.params.userId
     const id = req.params.id
     let sqlQuery = "SELECT *  FROM savedRecipe WHERE id = " + id + " AND userId = " + mysql.escape(userId);
@@ -58,12 +60,40 @@ exports.createRecipe = (req, res, next) => {
 }
 
 exports.deleteRecipe = (req, res, next) => {
-    const id = req.params.id
-    connection.query(sqlDelete + mysql.escape(id), function(err, data) {
+    const id = req.query.id
+    const userId = req.auth.userId
+    let images_url;
+
+    const exists = "SELECT * FROM savedRecipe WHERE id = " + mysql.escape(id) + " AND userId = " + mysql.escape(userId)
+    connection.query(exists, function(err, data) {
         if (err) {
             res.status(400).json({ err })
         } else {
-            res.status(200).json({ res: "fullyfied" })
+            if (data[0].images_url === 'NULL') {
+                connection.query(sqlDelete + mysql.escape(id) + "AND userId = " + mysql.escape(userId), function(err, data) {
+                    if (err) {
+                        res.status(400).json({ err })
+                    } else {
+                        res.status(200).json({ res: "fullyfied" })
+                    }
+                })
+            } else {
+                images_url = data[0].images_url
+                connection.query(sqlDelete + mysql.escape(id) + "AND userId = " + mysql.escape(userId), function(err, data) {
+                    if (err) {
+                        res.status(400).json({ err })
+                    } else {
+                        const filename = images_url.split('/images/')[1];
+                        fs.unlink('images/' + filename, (err) => {
+                            if (err) {
+                                res.status(400).json({ err })
+                            } else {
+                                res.status(200).json({ res: "fullyfied" })
+                            }
+                        });
+                    }
+                })
+            }
         }
     })
 }
