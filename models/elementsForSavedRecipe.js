@@ -1,5 +1,5 @@
 const sqlSelect = "SELECT *  FROM elementsforsavedrecipe WHERE recipeId = "
-const sqlInsert = ("INSERT INTO elementsforsavedrecipe (recipeId, title, unitNb, unitTitle, priceFor, used) VALUES ");
+const sqlInsert = ("INSERT INTO elementsforsavedrecipe (recipeId, userId, title, unitNb, unitTitle, priceFor, used) VALUES ");
 const sqlDelete = "DELETE FROM elementsforsavedrecipe WHERE id = "
 const sqlUpdatePre = "UPDATE elementsforsavedrecipe SET "
 const sqlUpdateMiddle = " = "

@@ -10,44 +10,78 @@ const sqlUpdateMiddle = elementsforsavedrecipe.sqlUpdateMiddle;
 const filterFloat = require('../logic/filterFloat')
 
 exports.getAllElementsForRecipe = (req, res, next) => {
+    const userId = req.auth.userId
     const recipeId = req.query.recipeId
-    let sqlQuery = sqlSelect + mysql.escape(recipeId);
-    connection.query(sqlQuery, function(err, data) {
+
+    const exists = "SELECT * FROM savedRecipe WHERE id = " + mysql.escape(recipeId) + " AND userId = " + mysql.escape(userId)
+    const sqlQuery = sqlSelect + mysql.escape(recipeId);
+
+    connection.query(exists, function(err, data) {
         if (err) {
             res.status(400).json({ err })
+        } else if (data.length <= 0) {
+            res.status(401).json({ res: "unauthorized" })
         } else {
-            res.status(200).json(data)
+            connection.query(sqlQuery, function(err, data) {
+                if (err) {
+                    res.status(400).json({ err })
+                } else {
+                    res.status(200).json(data)
+                }
+            })
         }
     })
 }
 
 exports.createElement = (req, res, next) => {
+    const userId = req.auth.userId
     const data = {
         recipeId: parseInt(req.query.recipeId),
+        userId: req.auth.userId,
         title: req.query.title,
         unitNb: filterFloat(req.query.unitNb),
         unitTitle: req.query.unitTitle,
         priceFor: filterFloat(req.query.priceFor),
         used: filterFloat(req.query.used)
     }
-    const sqlQuery = "((SELECT id FROM savedRecipe WHERE id = " + mysql.escape(data.recipeId) + "), " + mysql.escape(data.title) + ", " + mysql.escape(data.unitNb) + ", " + mysql.escape(data.unitTitle) + ", " + mysql.escape(data.priceFor) + ", " + mysql.escape(data.used) + ")"
-
-    connection.query(sqlInsert + sqlQuery, function(err, data) {
+    const sqlQuery = "((SELECT id FROM savedRecipe WHERE id = " + mysql.escape(data.recipeId) + "), " + mysql.escape(req.auth.userId) + ', ' + mysql.escape(data.title) + ", " + mysql.escape(data.unitNb) + ", " + mysql.escape(data.unitTitle) + ", " + mysql.escape(data.priceFor) + ", " + mysql.escape(data.used) + ")"
+    const exists = "SELECT * FROM savedRecipe WHERE id = " + mysql.escape(data.recipeId) + " AND userId = " + mysql.escape(userId)
+    connection.query(exists, function(err, data) {
         if (err) {
             res.status(400).json({ err })
+        } else if (data.length <= 0) {
+            res.status(401).json({ res: "unauthorized" })
         } else {
-            res.status(200).json({ res: "fullyfied" })
+            connection.query(sqlInsert + sqlQuery, function(err, data) {
+                if (err) {
+                    res.status(400).json({ err })
+                } else {
+                    res.status(200).json({ res: "fullyfied" })
+                }
+            })
         }
     })
 }
 
 exports.deleteElement = (req, res, next) => {
-    const id = req.params.id
-    connection.query(sqlDelete + mysql.escape(id), function(err, data) {
+    const userId = req.auth.userId
+    const recipeId = req.query.recipeId
+    const id = req.query.id
+
+    const exists = "SELECT * FROM savedRecipe WHERE id = " + mysql.escape(recipeId) + " AND userId = " + mysql.escape(userId)
+    connection.query(exists, function(err, data) {
         if (err) {
             res.status(400).json({ err })
+        } else if (data.length <= 0) {
+            res.status(401).json({ res: "unauthorized" })
         } else {
-            res.status(200).json({ res: "fullyfied" })
+            connection.query(sqlDelete + mysql.escape(id), function(err, data) {
+                if (err) {
+                    res.status(400).json({ err })
+                } else {
+                    res.status(200).json({ res: "fullyfied" })
+                }
+            })
         }
     })
 }
@@ -56,12 +90,22 @@ exports.updateElement = (req, res, next) => {
     const field = req.query.field
     const value = req.query.value
     const id = parseInt(req.query.id)
+    const userId = req.auth.userId
 
-    connection.query(sqlUpdatePre + field + sqlUpdateMiddle + mysql.escape(value) + sqlUpdateNext + mysql.escape(id), function(err, data) {
+    const exists = "SELECT * FROM savedRecipe WHERE id = " + mysql.escape(id) + " AND userId = " + mysql.escape(userId)
+    connection.query(exists, function(err, data) {
         if (err) {
             res.status(400).json({ err })
+        } else if (data.length <= 0) {
+            res.status(401).json({ res: "unauthorized" })
         } else {
-            res.status(200).json({ res: "fullyfied" })
+            connection.query(sqlUpdatePre + field + sqlUpdateMiddle + mysql.escape(value) + sqlUpdateNext + mysql.escape(id), function(err, data) {
+                if (err) {
+                    res.status(400).json({ err })
+                } else {
+                    res.status(200).json({ res: "fullyfied" })
+                }
+            })
         }
     })
 }
