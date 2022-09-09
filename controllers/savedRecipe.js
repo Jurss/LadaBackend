@@ -10,7 +10,7 @@ let mysql = require('mysql');
 const fs = require("fs");
 
 exports.getAllRecipe = (req, res, next) => {
-    const userId = req.query.userId
+    const userId = req.auth.userId
     let sqlQuery = sqlSelect + mysql.escape(userId);
     connection.query(sqlQuery, function(err, data) {
         if (err) {
@@ -21,8 +21,7 @@ exports.getAllRecipe = (req, res, next) => {
     })
 }
 exports.getOneRecipe = (req, res, next) => {
-    console.log('1', req.headers)
-    const userId = req.params.userId
+    const userId = req.auth.userId
     const id = req.params.id
     let sqlQuery = "SELECT *  FROM savedRecipe WHERE id = " + id + " AND userId = " + mysql.escape(userId);
     connection.query(sqlQuery, function(err, data) {
@@ -40,7 +39,7 @@ exports.getOneRecipe = (req, res, next) => {
 
 exports.createRecipe = (req, res, next) => {
     const data = {
-        userId: req.query.userId,
+        userId: req.auth.userId,
         title: req.query.title,
         quantity: req.query.quantity,
         typeQuantity: req.query.typeQuantity,
@@ -106,25 +105,88 @@ exports.updateRecipe = (req, res, next) => {
         const field = req.body.field;
         const value = req.body.value;
         const id = parseInt(req.body.id);
+        const userId = req.auth.userId
+        let images_url;
+        console.log(req.auth.userId)
 
-        connection.query(sqlUpdatePre + field + sqlUpdateMiddle + mysql.escape(value) + sqlUpdateNext + mysql.escape(id), function(err, data) {
+        const exists = "SELECT * FROM savedRecipe WHERE id = " + mysql.escape(id) + " AND userId = " + mysql.escape(userId)
+        connection.query(exists, function(err, data) {
+
             if (err) {
                 res.status(400).json({ err })
+            } else if (data.length <= 0) {
+                res.status(401).json({ res: "unauthorized" })
             } else {
-                res.status(200).json({ res: "fullyfied" })
+                images_url = data[0].images_url
+                if (images_url === 'NULL') {
+                    connection.query(sqlUpdatePre + field + sqlUpdateMiddle + mysql.escape(value) + sqlUpdateNext + mysql.escape(id), function(err, data) {
+                        if (err) {
+                            res.status(400).json({ err })
+                        } else {
+                            res.status(200).json({ res: "fullyfied" })
+                        }
+                    })
+                } else {
+                    const filename = images_url.split('/images/')[1];
+                    fs.unlink('images/' + filename, (err) => {
+                        if (err) {
+                            res.status(400).json({ err })
+                        } else {
+                            connection.query(sqlUpdatePre + field + sqlUpdateMiddle + mysql.escape(value) + sqlUpdateNext + mysql.escape(id), function(err, data) {
+                                if (err) {
+                                    res.status(400).json({ err })
+                                } else {
+                                    res.status(200).json({ res: "fullyfied" })
+                                }
+                            })
+                        }
+                    });
+                }
             }
         })
+
     } else {
         const field = req.body.field;
         const value = `${req.protocol}://${req.get('host')}/images/${req.file.filename}`;
         const id = parseInt(req.body.id);
+        const userId = req.auth.userId
+        let images_url;
 
-        connection.query(sqlUpdatePre + field + sqlUpdateMiddle + mysql.escape(value) + sqlUpdateNext + mysql.escape(id), function(err, data) {
+        const exists = "SELECT * FROM savedRecipe WHERE id = " + mysql.escape(id) + " AND userId = " + mysql.escape(userId)
+        connection.query(exists, function(err, data) {
             if (err) {
                 res.status(400).json({ err })
+            } else if (data.length <= 0) {
+                res.status(401).json({ res: "unauthorized" })
             } else {
-                res.status(200).json({ res: "fullyfied" })
+                images_url = data[0].images_url
+                if (images_url === "NULL") {
+                    connection.query(sqlUpdatePre + field + sqlUpdateMiddle + mysql.escape(value) + sqlUpdateNext + mysql.escape(id), function(err, data) {
+                        if (err) {
+                            res.status(400).json({ err })
+                        } else {
+                            res.status(200).json({ res: "fullyfied" })
+                        }
+                    })
+                } else {
+                    const filename = images_url.split('/images/')[1];
+                    console.log(filename)
+                    fs.unlink('images/' + filename, (err) => {
+                        if (err) {
+                            res.status(400).json({ err })
+                        } else {
+                            connection.query(sqlUpdatePre + field + sqlUpdateMiddle + mysql.escape(value) + sqlUpdateNext + mysql.escape(id), function(err, data) {
+                                if (err) {
+                                    res.status(400).json({ err })
+                                } else {
+                                    res.status(200).json({ res: "fullyfied" })
+                                }
+                            })
+                        }
+                    });
+                }
             }
         })
+
     }
 }
