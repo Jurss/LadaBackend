@@ -68,6 +68,8 @@ exports.deleteRecipe = (req, res, next) => {
     connection.query(exists, function(err, data) {
         if (err) {
             res.status(400).json({ err })
+        } else if (data.length <= 0) {
+            res.status(401).json({ res: "unauthorized" })
         } else {
             if (data[0].images_url === 'NULL') {
                 connection.query(sqlDelete + mysql.escape(id) + "AND userId = " + mysql.escape(userId), function(err, data) {
@@ -93,6 +95,7 @@ exports.deleteRecipe = (req, res, next) => {
                         });
                     }
                 })
+
             }
         }
     })
