@@ -11,10 +11,12 @@ exports.signUp = (req, res, next) => {
     const userId = uuidv4()
     const mail = req.query.mail
     const password = req.query.password
+    const firstName = req.query.firstName
+    const lastName = req.query.lastName
 
     bcrypt.hash(password, 15)
         .then(hash => {
-            const sqlQuery = mysql.escape(userId) + ", " + mysql.escape(mail) + ", " + mysql.escape(hash) + ")"
+            const sqlQuery = mysql.escape(userId) + ", " + mysql.escape(mail) + ", " + mysql.escape(hash) + ", " + mysql.escape(firstName) + ", " + mysql.escape(lastName) + ")"
             connection.query(sqlInsert + sqlQuery, function(err, data) {
                 if (err) {
                     if (err.errno === 1062) {

@@ -1,4 +1,4 @@
-sqlInsert = "INSERT INTO user (userId, mail, password) VALUES (";
+sqlInsert = "INSERT INTO user (userId, mail, password, firstName, lastName) VALUES (";
 sqlSelect = "SELECT userId, mail, password FROM user WHERE mail = "
 
 module.exports = {
