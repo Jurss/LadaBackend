@@ -39,9 +39,8 @@ exports.signIn = (req, res, next) => {
         if (err) {
             res.status(400).json({ err: "first" })
         } else if (Object.keys(data).length === 0) {
-            res.status(400).json({ res: "Mail/Mot de passe incorrecte" })
+            res.status(401).json({ res: "Mail/Mot de passe incorrect !" })
         } else {
-            console.log(data[0].password)
             bcrypt.compare(pass, data[0].password)
                 .then(valid => {
                     if (!valid) {
@@ -51,7 +50,9 @@ exports.signIn = (req, res, next) => {
                         userId: data[0].userId,
                         token: jwt.sign({ userId: data[0].userId },
                             "ufhqRRGvcSOdIyCOtXm", { expiresIn: "24h" }
-                        )
+                        ),
+                        firstName: data[0].firstName,
+                        lastName: data[0].lastName
                     })
                 })
                 .catch(err => res.status(500).json({ err: "two" }))

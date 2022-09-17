@@ -36,8 +36,8 @@ exports.getAllElementsForRecipe = (req, res, next) => {
 exports.createElement = (req, res, next) => {
     const userId = req.auth.userId
     const data = {
-        recipeId: parseInt(req.query.recipeId),
-        userId: req.auth.userId,
+        recipeId: req.query.recipeId,
+        userId: userId,
         title: req.query.title,
         unitNb: filterFloat(req.query.unitNb),
         unitTitle: req.query.unitTitle,

@@ -1,7 +1,7 @@
-const sqlSelect = "SELECT *  FROM savedRecipe WHERE userId = "
-const sqlInsert = ("INSERT INTO savedRecipe (userId, title, quantity, typeQuantity, costForOne, costForQuantitySelect, images_url) VALUES ");
-const sqlDelete = "DELETE FROM savedRecipe WHERE id = "
-const sqlUpdatePre = "UPDATE savedRecipe SET "
+const sqlSelect = "SELECT *  FROM savedrecipe WHERE userId = "
+const sqlInsert = "INSERT INTO `savedrecipe` (`userId`, `title`, `quantity`, `typeQuantity`, `costForOne`, `costForQuantitySelect`, `images_url`) VALUES ";
+const sqlDelete = "DELETE FROM savedrecipe WHERE id = "
+const sqlUpdatePre = "UPDATE savedrecipe SET "
 const sqlUpdateMiddle = " = "
 const sqlUpdateNext = " WHERE id = "
 module.exports = {

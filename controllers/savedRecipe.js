@@ -40,20 +40,23 @@ exports.getOneRecipe = (req, res, next) => {
 exports.createRecipe = (req, res, next) => {
     const data = {
         userId: req.auth.userId,
-        title: req.query.title,
-        quantity: req.query.quantity,
-        typeQuantity: req.query.typeQuantity,
-        costForOne: req.query.costForOne,
-        costForQuantitySelect: req.query.costForQuantitySelect,
+        title: req.body.title,
+        quantity: parseInt(req.body.quantity),
+        typeQuantity: req.body.typeQuantity,
+        costForOne: parseFloat(req.body.costForOne),
+        costForQuantitySelect: parseFloat(req.body.costForQuantitySelect),
         images: req.file ? `${req.protocol}://${req.get('host')}/images/${req.file.filename}` : "NULL"
     }
     const sqlQuery = "(" + mysql.escape(data.userId) + ", " + mysql.escape(data.title) + ", " + mysql.escape(data.quantity) + ", " + mysql.escape(data.typeQuantity) + ", " + mysql.escape(data.costForOne) + ", " + mysql.escape(data.costForQuantitySelect) + ", " + mysql.escape(data.images) + ")"
-
     connection.query(sqlInsert + sqlQuery, function(err, data) {
         if (err) {
+            console.log(err)
             res.status(400).json({ err })
         } else {
-            res.status(200).json({ res: "fullyfied" })
+            connection.query("SELECT LAST_INSERT_ID()", function(err, data) {
+                res.status(200).json({ data })
+            })
+
         }
     })
 }
