@@ -71,7 +71,7 @@ exports.signIn = (req, res, next) => {
 exports.changePass = (req, res, next) => {
     const currentPass = req.query.currentPass;
     const newPass = req.query.newPass;
-    const userId = req.query.userId;
+    const userId = req.auth.userId;
 
     const sqlQuery = sqlSelectId + mysql.escape(userId)
     connection.query(sqlQuery, function(err, data) {
@@ -104,7 +104,7 @@ exports.changePass = (req, res, next) => {
 
 exports.deleteAccount = (req, res, next) => {
     const password = req.query.password;
-    const userId = req.query.userId;
+    const userId = req.auth.userId;
 
     const sqlQuery = sqlSelectId + mysql.escape(userId)
     connection.query(sqlQuery, function(err, data) {
