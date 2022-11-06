@@ -23,7 +23,7 @@ exports.getAllRecipe = (req, res, next) => {
 exports.getOneRecipe = (req, res, next) => {
     const userId = req.auth.userId
     const id = req.params.id
-    let sqlQuery = "SELECT *  FROM savedRecipe WHERE id = " + id + " AND userId = " + mysql.escape(userId);
+    let sqlQuery = "SELECT *  FROM savedrecipe WHERE id = " + id + " AND userId = " + mysql.escape(userId);
     connection.query(sqlQuery, function(err, data) {
         if (err) {
             res.status(400).json({ err })
@@ -66,7 +66,7 @@ exports.deleteRecipe = (req, res, next) => {
     const userId = req.auth.userId
     let images_url;
 
-    const exists = "SELECT * FROM savedRecipe WHERE id = " + mysql.escape(id) + " AND userId = " + mysql.escape(userId)
+    const exists = "SELECT * FROM savedrecipe WHERE id = " + mysql.escape(id) + " AND userId = " + mysql.escape(userId)
     connection.query(exists, function(err, data) {
         if (err) {
             res.status(400).json({ err })
@@ -104,17 +104,18 @@ exports.deleteRecipe = (req, res, next) => {
 }
 
 exports.updateRecipe = (req, res, next) => {
+    console.log(req.file)
     if (req.file === undefined) {
         const field = req.body.field;
         const value = req.body.value;
         const id = parseInt(req.body.id);
         const userId = req.auth.userId
         let images_url;
-        console.log(req.auth.userId)
+        console.log(req.auth.userId, field, value, id)
 
-        const exists = "SELECT * FROM savedRecipe WHERE id = " + mysql.escape(id) + " AND userId = " + mysql.escape(userId)
+        const exists = "SELECT * FROM `savedrecipe` WHERE `id` = " + mysql.escape(id) + " AND `userId` = " + mysql.escape(userId)
         connection.query(exists, function(err, data) {
-
+            console.log(exists)
             if (err) {
                 res.status(400).json({ err })
             } else if (data.length <= 0) {
@@ -155,7 +156,7 @@ exports.updateRecipe = (req, res, next) => {
         const userId = req.auth.userId
         let images_url;
 
-        const exists = "SELECT * FROM savedRecipe WHERE id = " + mysql.escape(id) + " AND userId = " + mysql.escape(userId)
+        const exists = "SELECT * FROM `savedrecipe` WHERE `id` = " + mysql.escape(id) + " AND `userId` = " + mysql.escape(userId)
         connection.query(exists, function(err, data) {
             if (err) {
                 res.status(400).json({ err })

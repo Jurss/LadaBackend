@@ -5,7 +5,8 @@ const elementsForSavedRecipeCtrl = require('../controllers/elementsForSavedRecip
 
 router.post('/', auth, elementsForSavedRecipeCtrl.createElement);
 router.get('/', auth, elementsForSavedRecipeCtrl.getAllElementsForRecipe);
-router.delete('/:id', auth, elementsForSavedRecipeCtrl.deleteElement);
+router.get('/oneelement', auth, elementsForSavedRecipeCtrl.getOneElement);
+router.delete('/delete', auth, elementsForSavedRecipeCtrl.deleteElement);
 router.put('/', auth, elementsForSavedRecipeCtrl.updateElement);
 
 module.exports = router
