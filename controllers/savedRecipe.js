@@ -45,7 +45,7 @@ exports.createRecipe = (req, res, next) => {
         typeQuantity: req.body.typeQuantity,
         costForOne: parseFloat(req.body.costForOne),
         costForQuantitySelect: parseFloat(req.body.costForQuantitySelect),
-        images: req.file ? `${req.protocol}://${req.get('host')}/images/${req.file.filename}` : "NULL"
+        images: req.file ? `${req.protocol}s://${req.get('host')}/images/${req.file.filename}` : "NULL"
     }
     const sqlQuery = "(" + mysql.escape(data.userId) + ", " + mysql.escape(data.title) + ", " + mysql.escape(data.quantity) + ", " + mysql.escape(data.typeQuantity) + ", " + mysql.escape(data.costForOne) + ", " + mysql.escape(data.costForQuantitySelect) + ", " + mysql.escape(data.images) + ")"
     connection.query(sqlInsert + sqlQuery, function(err, data) {
@@ -111,7 +111,6 @@ exports.updateRecipe = (req, res, next) => {
         const id = parseInt(req.body.id);
         const userId = req.auth.userId
         let images_url;
-        console.log(req.auth.userId, field, value, id)
 
         const exists = "SELECT * FROM `savedrecipe` WHERE `id` = " + mysql.escape(id) + " AND `userId` = " + mysql.escape(userId)
         connection.query(exists, function(err, data) {
