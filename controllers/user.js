@@ -120,7 +120,7 @@ exports.deleteAccount = (req, res, next) => {
                             for (let i = 0; i < data.length; i++) {
                                 fs.unlink('images/' + data[i].images_url.substr(33), (err) => {
                                     if (err) {
-                                        console.log(err)
+                                        res.status(400).json({ err: err })
                                     }
                                 });
                             }

@@ -30,7 +30,6 @@ exports.getOneRecipe = (req, res, next) => {
         } else if (Object.keys(data).length === 0) {
             res.status(400).json({ res: "Undifined" })
         } else {
-            console.log(typeof data)
             res.status(200).json(data)
         }
     })
@@ -50,7 +49,6 @@ exports.createRecipe = (req, res, next) => {
     const sqlQuery = "(" + mysql.escape(data.userId) + ", " + mysql.escape(data.title) + ", " + mysql.escape(data.quantity) + ", " + mysql.escape(data.typeQuantity) + ", " + mysql.escape(data.costForOne) + ", " + mysql.escape(data.costForQuantitySelect) + ", " + mysql.escape(data.images) + ")"
     connection.query(sqlInsert + sqlQuery, function(err, data) {
         if (err) {
-            console.log(err)
             res.status(400).json({ err })
         } else {
             connection.query("SELECT LAST_INSERT_ID()", function(err, data) {
@@ -104,7 +102,6 @@ exports.deleteRecipe = (req, res, next) => {
 }
 
 exports.updateRecipe = (req, res, next) => {
-    console.log(req.file)
     if (req.file === undefined) {
         const field = req.body.field;
         const value = req.body.value;
@@ -114,7 +111,6 @@ exports.updateRecipe = (req, res, next) => {
 
         const exists = "SELECT * FROM `savedrecipe` WHERE `id` = " + mysql.escape(id) + " AND `userId` = " + mysql.escape(userId)
         connection.query(exists, function(err, data) {
-            console.log(exists)
             if (err) {
                 res.status(400).json({ err })
             } else if (data.length <= 0) {
@@ -173,7 +169,6 @@ exports.updateRecipe = (req, res, next) => {
                     })
                 } else {
                     const filename = images_url.split('/images/')[1];
-                    console.log(filename)
                     fs.unlink('images/' + filename, (err) => {
                         if (err) {
                             res.status(400).json({ err })

@@ -82,7 +82,6 @@ exports.deleteElement = (req, res, next) => {
     const id = req.query.id
 
     const exists = "SELECT * FROM elementsforsavedrecipe WHERE id = " + mysql.escape(id) + " AND userId = " + mysql.escape(userId) + " AND recipeId = " + recipeId
-    console.log(exists)
     connection.query(exists, function(err, data) {
         if (err) {
             res.status(400).json({ err })
